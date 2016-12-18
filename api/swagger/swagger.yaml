@@ -1,0 +1,57 @@
+swagger: '2.0'
+info:
+  title: Saladio API
+  description: Backend to provide various functionalities to clients
+  version: "1.0.0"
+host: api.saladio.ir
+schemes:
+  - http
+basePath: /v1
+produces:
+  - application/json
+definitions:
+  SaladComponent:
+    type: object
+    required:
+      - name
+      - weight
+      - callorie
+      - price
+    properties:
+      name:
+        type: string
+        description: Name of salad component
+      weight:
+        type: number
+        description: Effect of 1 unit of component on total weight of the salad (in gramms)
+      callorie:
+        type: number
+        description: Effect of 1 unit of component on total salad callorie (in K callorie)
+      price:
+        type: number
+        description: Effect of 1 unit of component on total salad price (in Rials)
+  SaladComponentGroup:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of salad component group
+paths:
+  /hello/{user}:
+    get:
+      description: Returns a greeting to the user!
+      parameters:
+        - name: user
+          in: path
+          type: string
+          required: true
+          description: The name of the user to greet.
+      responses:
+        200:
+          description: Returns the greeting.
+          schema:
+            type: string
+        400:
+          description: Invalid characters in "user" were provided.
+          
+
