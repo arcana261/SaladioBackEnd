@@ -69,10 +69,8 @@ const initItems = [{
   }]
 }];
 
-function ensureInitData() {
+function ensureInitData(t) {
   return Task.spawn(function*() {
-    const t = yield sequelize.transaction();
-
     let records = yield SaladComponentGroup.count({transaction: t});
 
     if (records < 1) {
@@ -87,31 +85,53 @@ function ensureInitData() {
         }
       }
     }
-
-    yield t.commit();
   });
 }
 
 
 module.exports = restified({
-  getSaladComponentGroup: function (req, res) {
+  getSaladComponentGroup: function (t, req, res) {
     return Task.spawn(function*() {
-      yield ensureInitData();
-      const t = yield sequelize.transaction();
+      yield ensureInitData(t);
 
-      const all = yield SaladComponentGroup.findAndCountAll({
+      const recordsTotal = yield SaladComponentGroup.count({transaction: t});
+      const recordsFiltered = recordsTotal;
+
+      const all = yield SaladComponentGroup.findAll({
         offset: req.swagger.params.start.value,
         limit: req.swagger.params.length.value,
         transaction: t
       });
 
-      res.json({
-        recordsTotal: all.count,
-        recordsFiltered: all.count,
-        data: all.rows
-      });
+      let result = [];
+      for (const group of all) {
+        const allItems = yield SaladComponent.findAll({
+          include: [{
+            model: SaladComponentGroup,
+            where: {
+              id: group.id
+            }
+          }],
+          transaction: t
+        });
 
-      yield t.commit();
+
+        result.push({
+          name: group.name,
+          items: allItems.map(x => ({
+            name: x.name,
+            callorie: x.callorie,
+            weight: x.weight,
+            price: x.price
+          }))
+        });
+      }
+
+      res.json({
+        recordsTotal: recordsTotal,
+        recordsFiltered: recordsFiltered,
+        data: result
+      });
     });
   }
 });
