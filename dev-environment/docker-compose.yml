@@ -1,0 +1,18 @@
+version: '2'
+services:
+  db:
+    image: "postgres:9.6"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - ./helper:/docker-entrypoint-initdb.d
+    stdin_open: true
+    tty: true
+    networks:
+      - arcana.me
+networks:
+  arcana.me:
+    external: true

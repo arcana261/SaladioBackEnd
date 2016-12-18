@@ -1,0 +1,2 @@
+CREATE DATABASE saladio;
+GRANT ALL PRIVILEGES ON DATABASE saladio TO postgres;

@@ -1,2 +1,1 @@
-# SaladioBackEnd
-Backend using RAML and Node.JS
+# Skeleton project for Swagger

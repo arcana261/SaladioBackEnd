@@ -3,7 +3,7 @@ info:
   title: Saladio API
   description: Backend to provide various functionalities to clients
   version: "1.0.0"
-host: api.saladio.ir
+host: 127.0.0.1:10010
 schemes:
   - http
 basePath: /v1
@@ -36,7 +36,50 @@ definitions:
       name:
         type: string
         description: Name of salad component group
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/SaladComponent'
+parameters:
+  listStart:
+    name: start
+    in: query
+    type: integer
+    description: starting offset to fetch list
+    required: true
+    minimum: 0
+  listLength:
+    name: length
+    in: query
+    type: integer
+    description: number of items to fetch from list
+    required: true
+    minimum: 0
 paths:
+  /SaladComponentGroup:
+    x-swagger-router-controller: saladComponentGroup
+    get:
+      description: Returns list of salad components to build custom salads
+      operationId: getSaladComponentGroup
+      parameters:
+        - $ref: "#/parameters/listStart"
+        - $ref: "#/parameters/listLength"
+      responses:
+        200:
+          description: A list of salad components
+          schema:
+            type: object
+            properties:
+              recordsFiltered:
+                type: integer
+                description: numeber of filtered records
+              recordsTotal:
+                type: integer
+                description: total number of rows
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/SaladComponentGroup'
   /hello/{user}:
     get:
       description: Returns a greeting to the user!

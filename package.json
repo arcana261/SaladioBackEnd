@@ -1,23 +1,26 @@
 {
-  "name": "saladio-backend",
-  "version": "1.0.0",
-  "description": "A backend supporting saladio startup project",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arcana261/SaladioBackEnd.git"
-  },
-  "author": "Mohamad mehdi Kharatizadeh",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/arcana261/SaladioBackEnd/issues"
-  },
-  "homepage": "https://github.com/arcana261/SaladioBackEnd#readme",
+  "name": "SaladioBackend",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger API Project",
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "main": "app.js",
   "dependencies": {
-    "express": "^4.14.0",
-    "osprey": "^0.3.2"
+    "co-task": "^1.0.0",
+    "express": "^4.12.3",
+    "pg": "^6.1.2",
+    "sequelize": "^3.27.0",
+    "sequelize-cli": "^2.5.1",
+    "swagger-express-mw": "^0.1.0"
+  },
+  "devDependencies": {
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "swagger project test"
   }
 }
