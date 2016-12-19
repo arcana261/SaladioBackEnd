@@ -26,7 +26,7 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
 
     console.log('!! API server is up!');
     console.log('!! to view swagger schema definition, simply open');
-    console.log('!! \'http://127.0.0.1:' + port + '/swagger\' in your browser');
+    console.log('!! \'http://127.0.0.1:' + port + '/v1/swagger\' in your browser');
     console.log('!! enjoy!');
     console.log();
     console.log();

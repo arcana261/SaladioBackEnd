@@ -2,10 +2,42 @@
 
 const models = require('../../models');
 const sequelize = models.sequelize;
+const env = process.env.NODE_ENV || 'development';
+const isStackTraceAvailable = env !== 'production';
 
 function isFunction(functionToCheck) {
   let getType = {};
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+}
+
+class CustomError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+
+    this._statusCode = statusCode;
+  }
+
+  get statusCode() {
+    return this._statusCode;
+  }
+}
+
+class ConflictError extends CustomError {
+  constructor(message) {
+    super(message, 409);
+  }
+}
+
+class InternalServerError extends CustomError {
+  constructor(message) {
+    super(message, 500);
+  }
+}
+
+class BadRequestError extends CustomError {
+  constructor(message) {
+    super(message, 400);
+  }
 }
 
 module.exports = function (obj) {
@@ -16,10 +48,12 @@ module.exports = function (obj) {
       const value = obj[prop];
       if (isFunction(value)) {
         const errorHandler = function (req, res, err) {
-          res.statusCode = 500;
+          res.statusCode = (err instanceof CustomError) ? err.statusCode : 500;
           res.json({
             code: -1,
-            message: (err instanceof Error) ? err.stack : err
+            message: (err instanceof Error) ? err.message : 'internal server error occured',
+            stack: (err instanceof Error) ?
+              (isStackTraceAvailable ? err.stack : 'stack trace disabled in production mode') : err
           });
         };
 
@@ -72,3 +106,11 @@ module.exports.autocommit = function (fn) {
       });
   };
 };
+
+module.exports.errors = {
+  conflict: ConflictError,
+  badRequest: BadRequestError,
+  internalServerError: InternalServerError
+};
+
+

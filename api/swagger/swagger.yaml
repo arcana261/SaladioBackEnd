@@ -9,7 +9,30 @@ schemes:
 basePath: /v1
 produces:
   - application/json
+consumes:
+  - application/json
+responses:
+  Conflict:
+    description: usually occurs when target resource exists or is already in requested state
+    schema:
+      $ref: '#/definitions/SystemError'
+  InternalServerError:
+    description: occurs when system is interrupted by an unexpected exception or internal error
+    schema:
+      $ref: '#/definitions/SystemError'
 definitions:
+  SystemError:
+    type: object
+    properties:
+      code:
+        type: integer
+        description: an integer that may show more insight about occurred error
+      message:
+        type: string
+        description: a text message that may show more insight about occured error
+      stack:
+        type: string
+        description: if debugging is disabled, will show stack trace of occured error
   SaladComponent:
     type: object
     required:
@@ -21,25 +44,121 @@ definitions:
       name:
         type: string
         description: Name of salad component
+        minLength: 1
       weight:
         type: number
         description: Effect of 1 unit of component on total weight of the salad (in gramms)
+        minimum: 0
       callorie:
         type: number
         description: Effect of 1 unit of component on total salad callorie (in K callorie)
+        minimum: 0
       price:
         type: number
         description: Effect of 1 unit of component on total salad price (in Rials)
+        minimum: 0
   SaladComponentGroup:
     type: object
     properties:
       name:
         type: string
         description: Name of salad component group
+        minLength: 1
       items:
         type: array
         items:
           $ref: '#/definitions/SaladComponent'
+  PersianDate:
+    type: object
+    required:
+      - year
+      - month
+      - day
+    properties:
+      year:
+        type: integer
+        description: Jalali year
+        minimum: 1300
+        maximum: 1500
+        default: 1395
+      month:
+        type: integer
+        description: month of year, starting from 1
+        minimum: 1
+        maximum: 12
+        default: 9
+      day:
+        type: integer
+        description: day of month, starting from 1
+        minimum: 1
+        maximum: 31
+        default: 27
+  User:
+    type: object
+    required:
+      - userName
+      - email
+      - phoneNumber
+      - firstName
+      - lastName
+      - gender
+      - birthDate
+      - weight
+      - addresses
+    properties:
+      userName:
+        type: string
+        description: Username
+        default: saladio
+      email:
+        type: string
+        description: email address of user
+        pattern: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+        default: saladio@domain.com
+      phoneNumber:
+        type: string
+        description: mobile (cell) phone number of user
+        pattern: '^(\+?989\d{2}|09\d{2})\d{7}$'
+        default: '09123334444'
+      password:
+        type: string
+        description: chosen password for user
+        minLength: 8
+        default: '12345678'
+      firstName:
+        type: string
+        description: user firstname
+        minLength: 1
+        default: 'saladio'
+      lastName:
+        type: string
+        description: user lastname
+        minLength: 1
+        default: 'chef'
+      birthDate:
+        $ref: '#/definitions/PersianDate'
+      gender:
+        type: string
+        description: gender of user
+        default: 'female'
+        enum:
+          - male
+          - female
+      weight:
+        type: number
+        description: weight of registered user (kg)
+        minimum: 1
+        maximum: 300
+        default: 56
+      addresses:
+        type: array
+        description: User delivery addresses
+        minLength: 1
+        default:
+          - saadat abad, majd, pelak 2, vahed 27
+        items:
+          type: string
+          minLength: 1
 parameters:
   listStart:
     name: start
@@ -48,6 +167,7 @@ parameters:
     description: starting offset to fetch list
     required: true
     minimum: 0
+    default: 0
   listLength:
     name: length
     in: query
@@ -55,8 +175,11 @@ parameters:
     description: number of items to fetch from list
     required: true
     minimum: 0
+    default: 10
 paths:
-  /SaladComponentGroup:
+  /swagger:
+    x-swagger-pipe: swagger_raw
+  /SaladComponentGroups:
     x-swagger-router-controller: saladComponentGroup
     get:
       description: Returns list of salad components to build custom salads
@@ -80,21 +203,31 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/SaladComponentGroup'
-  /hello/{user}:
-    get:
-      description: Returns a greeting to the user!
+  /Users:
+    x-swagger-router-controller: user
+    put:
+      description: register a new user in the system
+      operationId: signup
       parameters:
-        - name: user
-          in: path
-          type: string
+        - name: signup
+          in: body
+          description: information about user to signup
+          schema: 
+            $ref: '#/definitions/User'
           required: true
-          description: The name of the user to greet.
       responses:
         200:
-          description: Returns the greeting.
+          description: indicates that user is signedup successfuly
           schema:
-            type: string
-        400:
-          description: Invalid characters in "user" were provided.
+            type: object
+            properties:
+              userName:
+                type: string
+                description: username of newly added user
+                minLength: 1
+        409:
+          $ref: '#/responses/Conflict'
+        500:
+          $ref: '#/responses/InternalServerError'
           
 
