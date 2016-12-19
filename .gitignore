@@ -38,3 +38,7 @@ jspm_packages
 
 # IntelliJ / WebStorm specific
 .idea
+
+# environment
+/dev-environment/data
+/dev-environment/pgadmin

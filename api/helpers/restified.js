@@ -26,7 +26,7 @@ module.exports = function (obj) {
         if (value.length == 2) {
           result[prop] = function (req, res) {
             value(req, res)
-                .catch(err => errorHandler(req, res, err));
+              .catch(err => errorHandler(req, res, err));
           };
         }
         else {
@@ -34,10 +34,10 @@ module.exports = function (obj) {
             let t = null;
 
             sequelize.transaction()
-                .then(function (transaction) {
-                  t = transaction;
-                  return value(t, req, res);
-                }).then(function () {
+              .then(function (transaction) {
+                t = transaction;
+                return value(t, req, res);
+              }).then(function () {
               return t.commit();
             }).catch(function (err) {
               t.rollback().finally(function () {
@@ -56,3 +56,19 @@ module.exports = function (obj) {
   return result;
 };
 
+module.exports.autocommit = function (fn) {
+  return function () {
+    const args = Array.from(arguments);
+    let t = null;
+
+    return sequelize.transaction()
+      .then(function (transaction) {
+        t = transaction;
+        return fn.apply(this, [t].concat(args));
+      }).then(() => t.commit()).catch(err => {
+        return t.rollback().finally(() => {
+          throw err;
+        });
+      });
+  };
+};

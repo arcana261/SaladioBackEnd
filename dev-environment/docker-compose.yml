@@ -1,18 +1,29 @@
 version: '2'
 services:
-  db:
+  db.saladio.arcana.me:
     image: "postgres:9.6"
     ports:
-      - "5432:5432"
+      - "5490:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
     volumes:
       - ./helper:/docker-entrypoint-initdb.d
+      - ./data:/var/lib/postgresql/data
     stdin_open: true
     tty: true
     networks:
-      - arcana.me
+      - saladio.arcana.me
+  pgadmin.saladio.arcana.me:
+    image: "fenglc/pgadmin4:1.1"
+    ports:
+      - "5491:5050"
+    volumes:
+      - ./pgadmin:/root/.pgadmin
+    links:
+      - "db.saladio.arcana.me:postgres"
+    networks:
+      - saladio.arcana.me
 networks:
-  arcana.me:
-    external: true
+  saladio.arcana.me:
+    driver: bridge
