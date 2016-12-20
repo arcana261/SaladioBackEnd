@@ -8,7 +8,8 @@ const sequelize = models.sequelize;
 
 var config = {
   appRoot: __dirname, // required config
-  api: true
+  api: true,
+  swaggerSecurityHandlers: require('./api/helpers/securityHandlers')
 };
 
 SwaggerExpress.create(config, function (err, swaggerExpress) {

@@ -2,13 +2,10 @@
 
 const models = require('../../models');
 const sequelize = models.sequelize;
+const Sequelize = sequelize.Sequelize;
 const env = process.env.NODE_ENV || 'development';
 const isStackTraceAvailable = env !== 'production';
-
-function isFunction(functionToCheck) {
-  let getType = {};
-  return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
-}
+const types = require('./types');
 
 class CustomError extends Error {
   constructor(message, statusCode) {
@@ -46,14 +43,36 @@ module.exports = function (obj) {
   for (const prop in obj) {
     if (obj.hasOwnProperty(prop)) {
       const value = obj[prop];
-      if (isFunction(value)) {
+      if (types.isFunction(value)) {
         const errorHandler = function (req, res, err) {
-          res.statusCode = (err instanceof CustomError) ? err.statusCode : 500;
+          let statusCode = 500;
+          let message = 'internal server error occured';
+          let stack = '';
+
+          if (err instanceof Error) {
+            message = err.message;
+
+            if (isStackTraceAvailable) {
+              stack = err.stack;
+            }
+            else {
+              stack = 'stack trace disabled in production mode';
+            }
+
+            if (err instanceof CustomError) {
+              statusCode = err.statusCode;
+            }
+            else if (err instanceof Sequelize.UniqueConstraintError) {
+              statusCode = 409;
+              message = JSON.stringify(err.errors);
+            }
+          }
+
+          res.statusCode = statusCode;
           res.json({
             code: -1,
-            message: (err instanceof Error) ? err.message : 'internal server error occured',
-            stack: (err instanceof Error) ?
-              (isStackTraceAvailable ? err.stack : 'stack trace disabled in production mode') : err
+            message: message,
+            stack: stack
           });
         };
 

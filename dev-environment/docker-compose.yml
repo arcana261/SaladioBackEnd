@@ -9,9 +9,7 @@ services:
       POSTGRES_PASSWORD: 1234
     volumes:
       - ./helper:/docker-entrypoint-initdb.d
-      - ./data:/var/lib/postgresql/data
-    stdin_open: true
-    tty: true
+      - data.db.saladio.arcana.me:/var/lib/postgresql/data
     networks:
       - saladio.arcana.me
   pgadmin.saladio.arcana.me:
@@ -19,11 +17,16 @@ services:
     ports:
       - "5491:5050"
     volumes:
-      - ./pgadmin:/root/.pgadmin
+      - config.pgadmin.saladio.arcana.me:/root/.pgadmin
     links:
       - "db.saladio.arcana.me:postgres"
     networks:
       - saladio.arcana.me
+volumes:
+  data.db.saladio.arcana.me:
+    driver: local
+  config.pgadmin.saladio.arcana.me:
+    driver: local
 networks:
   saladio.arcana.me:
     driver: bridge

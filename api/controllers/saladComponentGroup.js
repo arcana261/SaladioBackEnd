@@ -16,6 +16,7 @@ module.exports = restified({
       const all = yield SaladComponentGroup.findAll({
         offset: req.swagger.params.start.value,
         limit: req.swagger.params.length.value,
+        order: [['id', 'ASC']],
         transaction: t
       });
 
@@ -31,10 +32,10 @@ module.exports = restified({
           transaction: t
         });
 
-
         result.push({
           name: group.name,
           items: allItems.map(x => ({
+            id: x.id,
             name: x.name,
             callorie: x.callorie,
             weight: x.weight,

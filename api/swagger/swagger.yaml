@@ -20,9 +20,14 @@ responses:
     description: occurs when system is interrupted by an unexpected exception or internal error
     schema:
       $ref: '#/definitions/SystemError'
+securityDefinitions:
+  basic:
+    type: basic
+    description: these APIs use basic HTTP authentication
 definitions:
   SystemError:
     type: object
+    description: encapsulates system error messages
     properties:
       code:
         type: integer
@@ -33,14 +38,23 @@ definitions:
       stack:
         type: string
         description: if debugging is disabled, will show stack trace of occured error
+    example:
+      code: -1
+      message: 'internal server error occured'
+      stack: 'error at a.js line 23...'
   SaladComponent:
     type: object
+    description: specifies a component used in ordering a custom salad
     required:
       - name
       - weight
       - callorie
       - price
     properties:
+      id:
+        type: integer
+        description: identifier of salad component
+        minimum: 0
       name:
         type: string
         description: Name of salad component
@@ -57,8 +71,15 @@ definitions:
         type: number
         description: Effect of 1 unit of component on total salad price (in Rials)
         minimum: 0
+    example:
+      id: 10
+      name: 'kahoo'
+      weight: 0.2
+      callorie: 0.4
+      price: 1024.5
   SaladComponentGroup:
     type: object
+    description: shows collection of custom salad components bundled together
     properties:
       name:
         type: string
@@ -68,8 +89,16 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/SaladComponent'
+    example:
+      name: 'sabzijat'
+      items:
+        - name: 'kahoo'
+          weight: 0.2
+          callorie: 0.4
+          price: 1024.5
   PersianDate:
     type: object
+    description: represents a jalali date
     required:
       - year
       - month
@@ -93,33 +122,39 @@ definitions:
         minimum: 1
         maximum: 31
         default: 27
+    example:
+      year: 1395
+      month: 9
+      day: 25
+  Email:
+    type: string
+    description: email address of user
+    pattern: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+    default: saladio@domain.com
+  PhoneNumber:
+    type: string
+    description: mobile (cell) phone number of user
+    pattern: '^(\+?989\d{2}|09\d{2})\d{7}$'
+    default: '09123334444'
   User:
     type: object
+    description: encapsulates information about a registered user
     required:
-      - userName
       - email
       - phoneNumber
       - firstName
       - lastName
       - gender
       - birthDate
-      - weight
       - addresses
     properties:
       userName:
         type: string
         description: Username
-        default: saladio
       email:
-        type: string
-        description: email address of user
-        pattern: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
-        default: saladio@domain.com
+        $ref: '#/definitions/Email'
       phoneNumber:
-        type: string
-        description: mobile (cell) phone number of user
-        pattern: '^(\+?989\d{2}|09\d{2})\d{7}$'
-        default: '09123334444'
+        $ref: '#/definitions/PhoneNumber'
       password:
         type: string
         description: chosen password for user
@@ -159,6 +194,89 @@ definitions:
         items:
           type: string
           minLength: 1
+    example:
+      userName: saladio@domain.com
+      email: saladio@domain.com
+      phoneNumber: '09123338888'
+      password: '12345678'
+      firstName: saladio
+      lastName: chef
+      birthDate:
+        year: 1395
+        month: 9
+        day: 25
+      gender: female
+      weight: 56
+      addresses:
+        - saadat abad, majd, pelak 2, vahed 27
+  URL:
+    type: string
+    description: represents an internet resource
+    pattern: '^(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$'
+  Salad:
+    type: object
+    description: |
+      acts as a base class for all saved salads (classics and user ordered)
+    required:
+      - name
+    properties:
+      id:
+        type: integer
+        description: a hidden system id
+        minimum: 0
+      name:
+        type: string
+        description: name of salad
+        minLength: 1
+        default: my salad
+      description:
+        type: string
+        description: A brief description about salad
+      picture:
+        $ref: '#/definitions/URL'
+      callorie:
+        type: number
+        description: total callorie of salad (in K callorie)
+        minimum: 0
+      weight:
+        type: number
+        description: total weight of salad (in gramms)
+        minimum: 0
+      price:
+        type: integer
+        description: total price of salad (in rials)
+        minimum: 0
+  PickedSaladComponent:
+    type: object
+    description: |
+      represents user choice about how many
+      components to user in a custom salad
+    required:
+      - saladComponentId
+      - quantity
+    properties:
+      saladComponentId:
+        type: integer
+        description: id of salad component
+        minimum: 0
+      quantity:
+        type: integer
+        description: number of units picked
+        minimum: 0
+  SavedSalad:
+    description: represents a user saved saved salad
+    allOf:
+      - $ref: '#/definitions/Salad'
+      - type: object
+        required:
+          - ingredients
+        properties:
+          ingredients:
+            type: array
+            description: salad components
+            minLength: 1
+            items:
+              $ref: '#/definitions/PickedSaladComponent'
 parameters:
   listStart:
     name: start
@@ -185,8 +303,10 @@ paths:
       description: Returns list of salad components to build custom salads
       operationId: getSaladComponentGroup
       parameters:
-        - $ref: "#/parameters/listStart"
-        - $ref: "#/parameters/listLength"
+        - $ref: '#/parameters/listStart'
+        - $ref: '#/parameters/listLength'
+      security:
+        - basic: []
       responses:
         200:
           description: A list of salad components
@@ -203,6 +323,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/SaladComponentGroup'
+        500:
+          $ref: '#/responses/InternalServerError'
   /Users:
     x-swagger-router-controller: user
     put:
@@ -229,5 +351,8 @@ paths:
           $ref: '#/responses/Conflict'
         500:
           $ref: '#/responses/InternalServerError'
+  /SavedSalads:
+    x-swagger-router-controller: savedSalad
+  
           
 
