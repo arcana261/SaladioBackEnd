@@ -296,6 +296,26 @@ definitions:
             type: string
             description: shows ingredients used in salad
             minLength: 1
+  ClassicSaladCatagory:
+    description: represents a catagory of classic salads
+    type: object
+    required:
+      - name
+    properties:
+      id:
+        type: integer
+        description: id of catagory
+      name:
+        type: string
+        description: shows name of salad catagory
+  RecordsFiltered:
+    description: shows number of filtered records
+    type: integer
+    minimum: 0
+  RecordsTotal:
+    type: integer
+    description: shows number of total records
+    minimum: 0
   DeliverySchedule:
     description: represents delivery schedules
     type: object
@@ -365,9 +385,8 @@ parameters:
     in: query
     type: integer
     description: starting offset to fetch list
-    required: true
+    required: false
     minimum: 0
-    default: 0
   listLength:
     name: length
     in: query
@@ -389,7 +408,10 @@ paths:
         - $ref: '#/parameters/listLength'
       security:
         - basic: []
-      x-required-role: [app]
+      x-required-role: app
+      tags:
+        - Salad Componet Groups
+        - 'Role: app'
       responses:
         200:
           description: A list of salad components
@@ -397,13 +419,12 @@ paths:
             type: object
             properties:
               recordsFiltered:
-                type: integer
-                description: numeber of filtered records
+                $ref: '#/definitions/RecordsFiltered'
               recordsTotal:
-                type: integer
-                description: total number of rows
+                $ref: '#/definitions/RecordsTotal'
               data:
                 type: array
+                description: actual list of data
                 items:
                   $ref: '#/definitions/SaladComponentGroup'
         500:
@@ -413,6 +434,9 @@ paths:
     put:
       description: register a new user in the system
       operationId: signup
+      tags:
+        - Users
+        - 'Role: guest'
       parameters:
         - name: signup
           in: body
@@ -434,8 +458,71 @@ paths:
           $ref: '#/responses/Conflict'
         500:
           $ref: '#/responses/InternalServerError'
-  /SavedSalads:
-    x-swagger-router-controller: salad
-  
+  /ClassicSaladCatagories:
+    x-swagger-router-controller: classicsaladcatagories
+    get:
+      description: gets classic (pre-made) salads in the system
+      operationId: getClassicSaladCatagories
+      parameters:
+        - $ref: '#/parameters/listStart'
+        - $ref: '#/parameters/listLength'
+      security:
+        - basic: []
+      x-required-role: app
+      tags:
+        - Classic Salad Catagories
+        - 'Role: app'
+      responses:
+        200:
+          description: returns pre-made salads in the system
+          schema:
+            type: object
+            properties:
+              recordsFiltered:
+                $ref: '#/definitions/RecordsFiltered'
+              recordsTotal:
+                $ref: '#/definitions/RecordsTotal'
+              data:
+                type: array
+                description: actual list of salad catagories
+                items:
+                  $ref: '#/definitions/ClassicSaladCatagory'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /ClassicSalads/{catagoryId}:
+    x-swagger-router-controller: classicsalads
+    get:
+      description: gets list of classic salads for a catagory
+      operationId: getClassicSaladsByCatagory
+      parameters:
+        - name: catagoryId
+          in: path
+          description: catagory to fetch classic salads for
+          type: integer
+          required: true
+        - $ref: '#/parameters/listStart'
+        - $ref: '#/parameters/listLength'
+      security:
+        - basic: []
+      x-required-role: app
+      tags:
+        - 'Role: app'
+        - Classic Salads
+      responses:
+        200:
+          description: returns list of classic salads
+          schema:
+            type: object
+            properties:
+              recordsFiltered:
+                $ref: '#/definitions/RecordsFiltered'
+              recordsTotal:
+                $ref: '#/definitions/RecordsTotal'
+              data:
+                type: array
+                description: actual list of salads
+                items:
+                  $ref: '#/definitions/ClassicSalad'
+      
           
 

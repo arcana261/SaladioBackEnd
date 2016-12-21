@@ -5,6 +5,7 @@ const sequelize = models.sequelize;
 const Sequelize = sequelize.Sequelize;
 const env = process.env.NODE_ENV || 'development';
 const isStackTraceAvailable = env !== 'production';
+const Task = require('co-task');
 const types = require('./types');
 
 class CustomError extends Error {
@@ -42,8 +43,13 @@ module.exports = function (obj) {
 
   for (const prop in obj) {
     if (obj.hasOwnProperty(prop)) {
-      const value = obj[prop];
-      if (types.isFunction(value)) {
+      let value = obj[prop];
+      if (types.isFunction(value) || types.isGeneratorFunction(value)) {
+        let argCount = value.length;
+        if (types.isGeneratorFunction(value)) {
+          value = Task.async(value);
+        }
+
         const errorHandler = function (req, res, err) {
           let statusCode = 500;
           let message = 'internal server error occured';
@@ -76,7 +82,7 @@ module.exports = function (obj) {
           });
         };
 
-        if (value.length == 2) {
+        if (argCount == 2) {
           result[prop] = function (req, res) {
             value(req, res)
               .catch(err => errorHandler(req, res, err));
