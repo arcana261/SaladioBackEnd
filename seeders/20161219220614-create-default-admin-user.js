@@ -2,6 +2,8 @@
 
 const models = require('../models');
 const User = models.User;
+const UserRole = models.UserRole;
+const UserAddress = models.UserAddress;
 const Task = require('co-task');
 
 module.exports = {
@@ -20,6 +22,22 @@ module.exports = {
         gender: 'male',
         weight: 100
       });
+
+      const appRole = yield UserRole.create({
+        role: 'app'
+      });
+
+      const adminRole = yield UserRole.create({
+        role: 'admin'
+      });
+
+      const address = yield UserAddress.create({
+        address: 'saadat abad, majd, pelak 14, vahed 1'
+      });
+
+      yield user.addUserRole(appRole);
+      yield user.addUserRole(adminRole);
+      yield user.addUserAddress(address);
     });
   },
 

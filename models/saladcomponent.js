@@ -9,6 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         SaladComponent.belongsTo(models.SaladComponentGroup);
+        SaladComponent.hasMany(models.SavedSaladComponent);
       }
     }
   });

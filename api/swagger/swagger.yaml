@@ -277,6 +277,88 @@ definitions:
             minLength: 1
             items:
               $ref: '#/definitions/PickedSaladComponent'
+  ClassicSalad:
+    description: represents a pre-defined salad
+    allOf:
+      - $ref: '#/definitions/Salad'
+      - type: object
+        required:
+          - longDescription
+          - ingredients
+        properties:
+          longDescription:
+            type: string
+            description: |
+              denotes more descriptive long description of
+              salad possibly a paragraph or two
+            minLength: 1
+          ingredients:
+            type: string
+            description: shows ingredients used in salad
+            minLength: 1
+  DeliverySchedule:
+    description: represents delivery schedules
+    type: object
+    required:
+      - catagory
+      - fromHour
+      - toHour
+    properties:
+      id:
+        type: integer
+        description: id of delivery schedule
+        minimum: 0
+      catagory:
+        type: string
+        description: whether it is launch or dinner
+        enum:
+          - launch
+          - dinner
+        default: launch
+      fromHour:
+        type: integer
+        description: start hour of delivery range
+        minimum: 8
+        maximum: 24
+        default: 11
+      toHour:
+        type: integer
+        description: end hour of delivery range
+        minimum: 8
+        maximum: 24
+        default: 12
+  Order:
+    type: object
+    description: represents a salad order
+    required:
+      - saladId
+      - deliveryDate
+      - deliveryScheduleId
+      - address
+      - price
+    properties:
+      id:
+        type: integer
+        description: id of order
+        minimum: 0
+      saladId:
+        type: integer
+        description: which salad which has been selected
+        minimum: 0
+      deliveryDate:
+        $ref: '#/definitions/PersianDate'
+      deliveryScheduleId:
+        type: integer
+        description: which shipping hour user has selected
+        minimum: 0
+      address:
+        type: string
+        description: delivery address
+        minLength: 1
+      price:
+        type: integer
+        description: price of salad in rials
+        minimum: 0
 parameters:
   listStart:
     name: start
