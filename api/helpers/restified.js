@@ -38,6 +38,12 @@ class BadRequestError extends CustomError {
   }
 }
 
+class NotFoundError extends CustomError {
+  constructor(message) {
+    super(message, 404);
+  }
+}
+
 module.exports = function (obj) {
   let result = {};
 
@@ -135,7 +141,8 @@ module.exports.autocommit = function (fn) {
 module.exports.errors = {
   conflict: ConflictError,
   badRequest: BadRequestError,
-  internalServerError: InternalServerError
+  internalServerError: InternalServerError,
+  notFound: NotFoundError
 };
 
 
