@@ -18,9 +18,6 @@ module.exports = function (sequelize, DataTypes) {
     picture: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        len: [1]
-      }
     },
     callorie: {
       type: DataTypes.FLOAT,
@@ -47,7 +44,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isIn: ['saved', 'classic']
+        isIn: [['saved', 'classic']]
       }
     }
   }, {

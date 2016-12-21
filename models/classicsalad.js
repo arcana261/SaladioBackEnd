@@ -19,6 +19,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         ClassicSalad.belongsTo(models.Salad);
+        ClassicSalad.belongsTo(models.ClassicSaladCatagory);
       }
     }
   });

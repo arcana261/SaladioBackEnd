@@ -71,7 +71,7 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isIn: ['male', 'female']
+        isIn: [['male', 'female']]
       }
     },
     weight: DataTypes.FLOAT

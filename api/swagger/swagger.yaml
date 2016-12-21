@@ -380,7 +380,7 @@ paths:
   /swagger:
     x-swagger-pipe: swagger_raw
   /SaladComponentGroups:
-    x-swagger-router-controller: saladComponentGroup
+    x-swagger-router-controller: saladcomponentgroup
     get:
       description: Returns list of salad components to build custom salads
       operationId: getSaladComponentGroup
@@ -435,7 +435,7 @@ paths:
         500:
           $ref: '#/responses/InternalServerError'
   /SavedSalads:
-    x-swagger-router-controller: savedSalad
+    x-swagger-router-controller: salad
   
           
 
