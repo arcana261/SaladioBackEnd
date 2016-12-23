@@ -359,7 +359,6 @@ definitions:
       - deliveryDate
       - deliveryScheduleId
       - address
-      - price
     properties:
       id:
         type: integer
@@ -531,6 +530,69 @@ paths:
           $ref: '#/responses/NotFound'
         500:
           $ref: '#/responses/InternalServerError'
-      
+  /DeliverySchedule:
+    x-swagger-router-controller: deliveryscheudle
+    get:
+      description: retrieves list of avai
+      operationId: getDeliverySchedules
+      security:
+        - basic: []
+      x-required-role:
+        - app
+      tags:
+        - 'Role: app'
+        - Delivery Schedules
+      parameters:
+        - name: catagory
+          in: query
+          description: filter by a specific catagory
+          type: string
+          required: false
+          enum:
+            - launch
+            - dinner
+        - $ref: '#/parameters/listStart'
+        - $ref: '#/parameters/listLength'
+      responses:
+        200:
+          description: returns requested delivery schedules
+          schema:
+            type: object
+            properties:
+              recordsFiltered:
+                $ref: '#/definitions/RecordsFiltered'
+              recordsTotal:
+                $ref: '#/definitions/RecordsTotal'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/DeliverySchedule'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /Orders:
+    x-swagger-router-controller: order
+    put:
+      description: place a new salad record! yeeaaah!
+      operationId: orderNewSalad
+      security:
+        - basic: []
+      x-required-role:
+        - app
+      parameters:
+        - name: order
+          in: body
+          description: new salad order to place
+          schema: 
+            $ref: '#/definitions/Order'
+      responses:
+        200:
+          description: identifies that order is successfuly placed
+          schema:
+            type: object
+            properties:
+              id:
+                description: id of newly placed order
+                type: integer
+                
           
 
