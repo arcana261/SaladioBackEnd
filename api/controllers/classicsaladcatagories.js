@@ -1,9 +1,8 @@
 'use strict';
 
-const models = require('../../models');
+const {ClassicSaladCatagory} = require('../../models');
 const restified = require('../helpers/restified');
 const pasync = require('../helpers/pasync');
-const ClassicSaladCatagory = models.ClassicSaladCatagory;
 
 module.exports = restified({
   getClassicSaladCatagories: function*(t, req, res) {

@@ -1,15 +1,12 @@
 'use strict';
 
 const restified = require('../helpers/restified');
-const Task = require('co-task');
-const models = require('../../models');
-const User = models.User;
-const UserAddress = models.UserAddress;
+const {User, UserAddress} = require('../../models');
 const types = require('../helpers/types');
 
 module.exports = restified({
   signup: function*(t, req, res) {
-    const body = req.swagger.params.signup.value;
+    const {signup: {value: body}} = req.swagger.params.signup.value;
 
     if (types.isString(body.userName)) {
       throw new restified.errors.badRequest(`username was provided: ${body.userName}`);

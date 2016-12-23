@@ -44,6 +44,7 @@ module.exports = function (sequelize, DataTypes) {
       associate: function (models) {
         Order.belongsTo(models.Salad);
         Order.belongsTo(models.DeliverySchedule);
+        Order.belongsTo(models.User);
       }
     }
   });

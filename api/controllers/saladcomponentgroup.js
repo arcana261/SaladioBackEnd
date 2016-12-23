@@ -1,9 +1,7 @@
 "use strict";
 
-const models = require('../../models');
+const {SaladComponent, SaladComponentGroup} = require('../../models');
 const pasync = require('../helpers/pasync');
-const SaladComponentGroup = models.SaladComponentGroup;
-const SaladComponent = models.SaladComponent;
 const restified = require('../helpers/restified');
 
 module.exports = restified({

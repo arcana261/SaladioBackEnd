@@ -24,6 +24,10 @@ responses:
     description: happens when target resource is not found on the server
     schema:
       $ref: '#/definitions/SystemError'
+  BadRequest:
+    description: happens when input parameters does not match criteria
+    schema:
+      $ref: '#/definitions/SystemError'
 securityDefinitions:
   basic:
     type: basic
@@ -398,6 +402,61 @@ parameters:
     required: true
     minimum: 0
     default: 10
+    maximum: 50
+  fromDateYear:
+    name: fromDateYear
+    in: query
+    type: integer
+    description: filter results based on persian calendar
+    required: false
+    default: 1395
+    minimum: 1390
+    maximum: 1410
+  fromDateMonth:
+    name: fromDateMonth
+    in: query
+    type: integer
+    description: filters results based on persian calendar
+    required: false
+    default: 9
+    minimum: 1
+    maximum: 12
+  fromDateDay:
+    name: fromDateDay
+    in: query
+    type: integer
+    description: filters results based on persian calendar
+    required: false
+    default: 1
+    minimum: 1
+    maximum: 31
+  toDateYear:
+    name: toDateYear
+    in: query
+    type: integer
+    description: filters results based on persian calendar
+    required: false
+    default: 1395
+    minimum: 1390
+    maximum: 1410
+  toDateMonth:
+    name: toDateMonth
+    in: query
+    type: integer
+    description: filters results based on persian calendar
+    required: false
+    default: 9
+    minimum: 1
+    maximum: 12
+  toDateDay:
+    name: toDateDay
+    in: query
+    type: integer
+    description: filters results based on persian calendar
+    required: false
+    default: 31
+    minimum: 1
+    maximum: 31
 paths:
   /swagger:
     x-swagger-pipe: swagger_raw
@@ -420,6 +479,10 @@ paths:
           description: A list of salad components
           schema:
             type: object
+            required:
+              - recordsTotal
+              - recordsFiltered
+              - data
             properties:
               recordsFiltered:
                 $ref: '#/definitions/RecordsFiltered'
@@ -452,6 +515,8 @@ paths:
           description: indicates that user is signedup successfuly
           schema:
             type: object
+            required:
+              - userName
             properties:
               userName:
                 type: string
@@ -480,6 +545,10 @@ paths:
           description: returns pre-made salads in the system
           schema:
             type: object
+            required:
+              - recordsTotal
+              - recordsFiltered
+              - data
             properties:
               recordsFiltered:
                 $ref: '#/definitions/RecordsFiltered'
@@ -493,7 +562,7 @@ paths:
         500:
           $ref: '#/responses/InternalServerError'
   /ClassicSalads/{catagoryId}:
-    x-swagger-router-controller: classicsalads
+    x-swagger-router-controller: classicsalad
     get:
       description: gets list of classic salads for a catagory
       operationId: getClassicSaladsByCatagory
@@ -516,6 +585,10 @@ paths:
           description: returns list of classic salads
           schema:
             type: object
+            required:
+              - recordsTotal
+              - recordsFiltered
+              - data
             properties:
               recordsFiltered:
                 $ref: '#/definitions/RecordsFiltered'
@@ -530,8 +603,40 @@ paths:
           $ref: '#/responses/NotFound'
         500:
           $ref: '#/responses/InternalServerError'
+  /SavedSalads/Me:
+    x-swagger-router-controller: savedsalad
+    get:
+      description: gets list of saved salads ordered by current user
+      operationId: getSavedSaladsByMe
+      parameters:
+        - $ref: '#/parameters/listStart'
+        - $ref: '#/parameters/listLength'
+      security:
+        - basic: []
+      x-required-role:
+        - app
+      tags:
+        - 'Role: app'
+        - Saved Salads
+      responses:
+        200:
+          description: list of saved user salads
+          schema:
+            type: object
+            properties:
+              recordsTotal:
+                $ref: '#/definitions/RecordsTotal'
+              recordsFiltered:
+                $ref: '#/definitions/RecordsFiltered'
+              data:
+                type: array
+                description: an array containing filtered saved salads
+                items:
+                  $ref: '#/definitions/SavedSalad'
+        500:
+          $ref: '#/responses/InternalServerError'
   /DeliverySchedule:
-    x-swagger-router-controller: deliveryscheudle
+    x-swagger-router-controller: deliveryschedule
     get:
       description: retrieves list of avai
       operationId: getDeliverySchedules
@@ -558,6 +663,10 @@ paths:
           description: returns requested delivery schedules
           schema:
             type: object
+            required:
+              - recordsTotal
+              - recordsFiltered
+              - data
             properties:
               recordsFiltered:
                 $ref: '#/definitions/RecordsFiltered'
@@ -578,6 +687,9 @@ paths:
         - basic: []
       x-required-role:
         - app
+      tags:
+        - 'Role: app'
+        - Orders
       parameters:
         - name: order
           in: body
@@ -589,10 +701,119 @@ paths:
           description: identifies that order is successfuly placed
           schema:
             type: object
+            required:
+              - id
             properties:
               id:
                 description: id of newly placed order
                 type: integer
+        500:
+          $ref: '#/responses/InternalServerError'
+        404:
+          $ref: '#/responses/NotFound'
+  /Orders/NewCustom:
+    x-swagger-router-controller: order
+    put:
+      description: place a new custom salad order
+      operationId: orderNewCustomSalad
+      security:
+        - basic: []
+      x-required-role:
+        - app
+      tags:
+        - 'Role: app'
+        - Orders
+      parameters:
+        - name: order
+          in: body
+          description: new salad to place
+          schema:
+            type: object
+            required:
+              - ingredients
+              - deliveryDate
+              - deliveryScheduleId
+              - address
+              - name
+            properties:
+              ingredients:
+                type: array
+                minLength: 1
+                items:
+                  $ref: '#/definitions/PickedSaladComponent'
+              deliveryDate:
+                $ref: '#/definitions/PersianDate'
+              deliveryScheduleId:
+                type: integer
+                description: id of requested delivery schedule
+                minimum: 0
+              address:
+                type: string
+                description: address to delivery to
+                minLength: 1
+              name:
+                type: string
+                description: name of new salad to save
+                minLength: 1
+      responses:
+        200:
+          description: new order is placed and saved!
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                description: id of new order
+                type: integer
+                minimum: 0
+        404:
+          $ref: '#/responses/NotFound'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /Orders/Me:
+    x-swagger-router-controller: order
+    get:
+      description: gets orders made by current logged on user
+      operationId: getOrdersByMe
+      security:
+        - basic: []
+      x-required-role:
+        - app
+      tags:
+        - 'Role: app'
+        - Orders
+      parameters:
+        - $ref: '#/parameters/listStart'
+        - $ref: '#/parameters/listLength'
+        - $ref: '#/parameters/fromDateYear'
+        - $ref: '#/parameters/fromDateMonth'
+        - $ref: '#/parameters/fromDateDay'
+        - $ref: '#/parameters/toDateYear'
+        - $ref: '#/parameters/toDateMonth'
+        - $ref: '#/parameters/toDateDay'
+      responses:
+        200:
+          description: searches and returns orders
+          schema:
+            type: object
+            required:
+              - recordsTotal
+              - recordsFiltered
+              - data
+            properties:
+              recordsTotal:
+                $ref: '#/definitions/RecordsTotal'
+              recordsFiltered:
+                $ref: '#/definitions/RecordsFiltered'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Order'
+        500:
+          $ref: '#/responses/InternalServerError'
+        400:
+          $ref: '#/responses/BadRequest'
                 
           
 

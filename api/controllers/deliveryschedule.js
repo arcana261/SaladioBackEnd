@@ -2,7 +2,7 @@
 
 const restified = require('../helpers/restified');
 const {DeliverySchedule} = require('../../models');
-const pasync = require('../helpers/async');
+const pasync = require('../helpers/pasync');
 
 module.exports = restified({
   getDeliverySchedules: function*(t, req, res) {
@@ -18,10 +18,10 @@ module.exports = restified({
       recordsFiltered: yield DeliverySchedule.count({where: where, transaction: t}),
       data: yield pasync.map(yield DeliverySchedule.findAll({
         where: where,
-        transaction: transaction,
+        transaction: t,
         limit: length,
         offset: start,
-        order: [['id', 'ASC']]
+        order: [['fromHour', 'ASC']]
       }), item => ({
         id: item.id,
         catagory: item.catagory,
@@ -30,6 +30,6 @@ module.exports = restified({
       }))
     };
 
-    return res.json(result);
+    res.json(result);
   }
 });

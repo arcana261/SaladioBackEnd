@@ -9,11 +9,11 @@ const types = require('./types');
 module.exports = {
   basic: function (req, res, key, next) {
     Task.spawn(function*() {
-      const credentials = auth.parse(req.headers.authorization);
+      const {name: userName, pass: password} = auth.parse(req.headers.authorization);
       const user = yield User.findOne({
         where: {
-          userName: credentials.name,
-          password: credentials.pass
+          userName: userName,
+          password: password
         }
       });
 
@@ -21,17 +21,24 @@ module.exports = {
         throw new Error('username/password invalid');
       }
 
+      req.swagger.auth = {
+        userId: user.id,
+        userName: userName
+      };
+
       if ('x-required-role' in req.swagger.operation) {
         let required = req.swagger.operation['x-required-role'];
         if (!types.isArray(required)) {
           required = [required];
         }
 
-        const roles = yield user.getUserRoles();
+        const roles = (yield user.getUserRoles()).map(x => x.role);
 
-        if (!roles.some(x => required.indexOf(x.role) >= 0)) {
+        if (!roles.some(x => x !== required)) {
           throw new Error('user does not match required role');
         }
+
+        req.swagger.auth.roles = roles;
       }
     }).then(() => next()).catch(err => next(err));
   }
