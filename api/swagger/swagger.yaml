@@ -794,7 +794,7 @@ paths:
         - 'Role: app'
         - Orders
       parameters:
-        - name: order
+        - name: orderCustomSalad
           in: body
           description: new salad to place
           schema:
@@ -873,9 +873,13 @@ paths:
               - data
             properties:
               recordsTotal:
-                $ref: '#/definitions/RecordsTotal'
+                type: integer
+                description: returns total number of filtered records
+                minimum: 0
               recordsFiltered:
-                $ref: '#/definitions/RecordsFiltered'
+                type: integer
+                description: returns total number of records
+                minimum: 0
               data:
                 type: array
                 items:

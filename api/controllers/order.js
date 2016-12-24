@@ -72,7 +72,7 @@ module.exports = restified({
    */
   orderNewCustomSalad: function*(t, req, res) {
     const {
-        order: {
+        orderCustomSalad: {
             value: {
                 ingredients: pickedIngredients,
                 deliveryDate: {
