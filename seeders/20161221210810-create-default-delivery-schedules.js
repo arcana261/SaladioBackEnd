@@ -53,7 +53,7 @@ module.exports = {
             });
           }
 
-          for (const [from, to] of launch) {
+          for (const [from, to] of dinner) {
             yield DeliverySchedule.create({
               where: {
                 catagory: 'dinner',

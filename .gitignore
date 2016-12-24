@@ -42,3 +42,7 @@ jspm_packages
 # environment
 /dev-environment/data
 /dev-environment/pgadmin
+
+# codegen
+/codegen/bin
+/codegen/out

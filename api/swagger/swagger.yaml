@@ -160,9 +160,15 @@ definitions:
         type: string
         description: Username
       email:
-        $ref: '#/definitions/Email'
+        type: string
+        description: email address of user
+        pattern: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+        default: saladio@domain.com
       phoneNumber:
-        $ref: '#/definitions/PhoneNumber'
+        type: string
+        description: mobile (cell) phone number of user
+        pattern: '^(\+?989\d{2}|09\d{2})\d{7}$'
+        default: '09123334444'
       password:
         type: string
         description: chosen password for user
@@ -485,14 +491,45 @@ paths:
               - data
             properties:
               recordsFiltered:
-                $ref: '#/definitions/RecordsFiltered'
+                type: integer
+                description: total number of filtered records
+                minimum: 0
               recordsTotal:
-                $ref: '#/definitions/RecordsTotal'
+                type: integer
+                description: total number of records
+                minimum: 0
               data:
                 type: array
                 description: actual list of data
                 items:
                   $ref: '#/definitions/SaladComponentGroup'
+        500:
+          $ref: '#/responses/InternalServerError'
+  /SaladComponents/{componentId}:
+    x-swagger-router-controller: saladcomponent
+    get:
+      parameters:
+        - name: componentId
+          in: path
+          type: integer
+          description: Get information about a specific salad component
+          required: true
+          minimum: 0
+      operationId: getSaladComponentById
+      security:
+        - basic: []
+      x-required-role:
+        - app
+      tags:
+        - Salad Components
+        - 'Role: app'
+      responses:
+        200:
+          description: returns salad component
+          schema:
+            $ref: '#/definitions/SaladComponent'
+        404:
+          $ref: '#/responses/NotFound'
         500:
           $ref: '#/responses/InternalServerError'
   /Users:
@@ -526,6 +563,21 @@ paths:
           $ref: '#/responses/Conflict'
         500:
           $ref: '#/responses/InternalServerError'
+  /Users/Me:
+    x-swagger-router-controller: user
+    get:
+      description: get information about currently logged on user
+      operationId: getCurrentUser
+      tags:
+        - Users
+        - 'Role: app'
+      security:
+        - basic: []
+      responses:
+        200:
+          description: contains an object which holds user information
+          schema:
+            $ref: '#/definitions/User'
   /ClassicSaladCatagories:
     x-swagger-router-controller: classicsaladcatagories
     get:
@@ -551,9 +603,13 @@ paths:
               - data
             properties:
               recordsFiltered:
-                $ref: '#/definitions/RecordsFiltered'
+                type: integer
+                description: total number of filtered records
+                minimum: 0
               recordsTotal:
-                $ref: '#/definitions/RecordsTotal'
+                type: integer
+                description: total number of records
+                minimum: 0
               data:
                 type: array
                 description: actual list of salad catagories
@@ -591,9 +647,13 @@ paths:
               - data
             properties:
               recordsFiltered:
-                $ref: '#/definitions/RecordsFiltered'
+                type: integer
+                description: total number of filtered records
+                minimum: 0
               recordsTotal:
-                $ref: '#/definitions/RecordsTotal'
+                type: integer
+                description: total number of records
+                minimum: 0
               data:
                 type: array
                 description: actual list of salads
@@ -625,9 +685,13 @@ paths:
             type: object
             properties:
               recordsTotal:
-                $ref: '#/definitions/RecordsTotal'
+                type: integer
+                description: total number of filtered records
+                minimum: 0
               recordsFiltered:
-                $ref: '#/definitions/RecordsFiltered'
+                type: integer
+                description: total number of records
+                minimum: 0
               data:
                 type: array
                 description: an array containing filtered saved salads
@@ -669,9 +733,13 @@ paths:
               - data
             properties:
               recordsFiltered:
-                $ref: '#/definitions/RecordsFiltered'
+                type: integer
+                description: total number of filtered records
+                minimum: 0
               recordsTotal:
-                $ref: '#/definitions/RecordsTotal'
+                type: integer
+                description: total number of records
+                minimum: 0
               data:
                 type: array
                 items:
