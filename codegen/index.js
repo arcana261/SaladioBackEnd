@@ -60,7 +60,7 @@ Task.spawn(function*() {
   Output is saved to ./codegen/out/"language"
   
   Example Languages:
-  csharp
+  csharp, xamarin
 `);
 
     return 0;
@@ -76,9 +76,36 @@ Task.spawn(function*() {
   const input = path.join(__dirname, '../api/swagger/swagger.yaml');
   const output = path.join(__dirname, `out/${lang}`);
 
-  if (shell.exec(`java -jar ${codegenPath} generate -i ${input} -l ${lang} -o ${output}`).code !== 0) {
+  let realLang = lang;
+  if (realLang === 'xamarin') {
+    realLang = 'csharp';
+  }
+
+  if (shell.exec(`java -jar ${codegenPath} generate -i ${input} -l ${realLang} -o ${output}`).code !== 0) {
     console.log('!! failed to execute command');
     return -1;
+  }
+
+  if (lang === 'xamarin') {
+    shell.cp('-f', path.join(__dirname, 'xamarin/IO.Swagger.csproj'), path.join(__dirname, 'out/xamarin/src/IO.Swagger/IO.Swagger.csproj'));
+    shell.cp('-f', path.join(__dirname, 'xamarin/packages.config'), path.join(__dirname, 'out/xamarin/src/IO.Swagger/packages.config'));
+    shell.cp('-rf', path.join(__dirname, 'xamarin/Resources'), path.join(__dirname, 'out/xamarin/src/IO.Swagger/'));
+    shell.cp('-rf', path.join(__dirname, 'xamarin/packages'), path.join(__dirname, 'out/xamarin/src/'));
+
+    for(const model of shell.find(path.join(__dirname, 'out/xamarin/src/IO.Swagger/Model/*.cs'))) {
+      let content = yield fs.readFile(model, 'utf8');
+      const modelName = path.basename(model, path.extname(model));
+
+      if (content.indexOf('JsonConstructorAttribute') < 0) {
+        content = content.replace('public override int GetHashCode()', `
+        [JsonConstructorAttribute]
+        protected ${modelName}() { }
+        
+        public override int GetHashCode()
+`);
+        yield fs.writeFile(model, content, 'utf8');
+      }
+    }
   }
 
   console.log('successfuly generated!');

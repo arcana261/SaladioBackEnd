@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "codegen": "node codegen.js -l csharp",
+    "codegen": "node codegen.js -l xamarin",
     "test": "swagger project test"
   }
 }

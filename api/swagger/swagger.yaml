@@ -3,7 +3,8 @@ info:
   title: Saladio API
   description: Backend to provide various functionalities to clients
   version: "1.0.0"
-host: 127.0.0.1:10010
+#host: 127.0.0.1:10010
+host: 178.162.207.98:10010
 schemes:
   - http
 basePath: /v1
@@ -88,6 +89,9 @@ definitions:
   SaladComponentGroup:
     type: object
     description: shows collection of custom salad components bundled together
+    required:
+      - name
+      - items
     properties:
       name:
         type: string
