@@ -3,8 +3,8 @@ info:
   title: Saladio API
   description: Backend to provide various functionalities to clients
   version: "1.0.0"
-#host: 127.0.0.1:10010
-host: 178.162.207.98:10010
+host: 127.0.0.1:10010
+#host: 178.162.207.98:10010
 schemes:
   - http
 basePath: /v1
@@ -57,8 +57,30 @@ definitions:
     required:
       - name
       - weight
-      - callorie
       - price
+      - fat
+      - carbohydrat
+      - energy
+      - moisture
+      - sugar
+      - fibre
+      - calcium
+      - iron
+      - magnesium
+      - phosphorus
+      - zinc
+      - copper
+      - manganese
+      - vitamin_e
+      - vitamin_d
+      - vitamin_c
+      - thiamin
+      - vitamin_b2
+      - vitamin_b3
+      - vitamin_b6
+      - vitamin_b12
+      - vitamin_k
+      - vitamin_a
     properties:
       id:
         type: integer
@@ -72,13 +94,113 @@ definitions:
         type: number
         description: Effect of 1 unit of component on total weight of the salad (in gramms)
         minimum: 0
-      callorie:
-        type: number
-        description: Effect of 1 unit of component on total salad callorie (in K callorie)
-        minimum: 0
       price:
         type: number
         description: Effect of 1 unit of component on total salad price (in Rials)
+        minimum: 0
+      code:
+        type: string
+        description: a generic code
+        minLength: 1
+      description:
+        type: string
+        description: a human readable description
+        minLength: 1
+      protein:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      fat:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      carbohydrat:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      energy:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      moisture:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      sugar:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      fibre:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      calcium:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      iron:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      magnesium:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      phosphorus:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      zinc:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      copper:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      manganese:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_e:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_d:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_c:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      thiamin:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_b2:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_b3:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_b6:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_b12:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_k:
+        type: number
+        description: salad fact sheet item
+        minimum: 0
+      vitamin_a:
+        type: number
+        description: salad fact sheet item
         minimum: 0
     example:
       id: 10
@@ -159,6 +281,7 @@ definitions:
       - gender
       - birthDate
       - addresses
+      - height
     properties:
       userName:
         type: string
@@ -203,6 +326,12 @@ definitions:
         minimum: 1
         maximum: 300
         default: 56
+      height:
+        type: integer
+        description: height in (cm)
+        minimum: 50
+        maximum: 280
+        default: 170
       addresses:
         type: array
         description: User delivery addresses
@@ -584,6 +713,112 @@ paths:
           description: contains an object which holds user information
           schema:
             $ref: '#/definitions/User'
+  /Users/Me/Needs:
+    x-swagger-router-controller: user
+    get:
+      description: gets how much the body of user needs like callorie, protein, etc
+      operationId: getCurrentUserNeeds
+      tags:
+        - Users
+        - 'Role: app'
+      security:
+        - basic: []
+      responses:
+        200:
+          description: ddd
+          schema:
+            type: object
+            required:
+              - vitamin_a
+              - vitamin_c
+              - vitamin_d
+              - vitamin_e
+              - vitamin_k
+              - vitamin_b1
+              - vitamin_b2
+              - vitamin_b3
+              - vitamin_b6
+              - vitamin_b12
+              - calcium
+              - copper
+              - iron
+              - magnesium
+              - manganese
+              - phosphorus
+              - zinc
+            properties:
+              energy:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_a:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_c:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_d:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_e:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_k:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_b1:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_b2:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_b3:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_b6:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              vitamin_b12:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              calcium:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              copper:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              iron:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              magnesium:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              manganese:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              phosphorus:
+                type: number
+                description: fact sheet item
+                minimum: 0
+              zinc:
+                type: number
+                description: fact sheet item
+                minimum: 0
   /ClassicSaladCatagories:
     x-swagger-router-controller: classicsaladcatagories
     get:

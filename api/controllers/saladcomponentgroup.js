@@ -31,9 +31,34 @@ module.exports = restified({
           })).map(x => ({
             id: x.id,
             name: x.name,
-            callorie: x.callorie,
             weight: x.weight,
-            price: x.price
+            price: x.price,
+            fat: x.fat,
+            carbohydrat: x.carbohydrat,
+            energy: x.energy,
+            moisture: x.moisture,
+            sugar: x.sugar,
+            fibre: x.fibre,
+            calcium: x.calcium,
+            iron: x.iron,
+            magnesium: x.magnesium,
+            phosphorus: x.phosphorus,
+            zinc: x.zinc,
+            copper: x.copper,
+            manganese: x.manganese,
+            vitamin_e: x.vitamin_e,
+            vitamin_d: x.vitamin_d,
+            vitamin_c: x.vitamin_c,
+            thiamin: x.thiamin,
+            vitamin_b2: x.vitamin_b2,
+            vitamin_b3: x.vitamin_b3,
+            vitamin_b6: x.vitamin_b6,
+            vitamin_b12: x.vitamin_b12,
+            vitamin_k: x.vitamin_k,
+            vitamin_a: x.vitamin_a,
+            protein: x.protein,
+            description: x.description,
+            code: x.code
           }))
         };
       })

@@ -20,7 +20,8 @@ module.exports = {
         birthDateMonth: 9,
         birthDateDay: 25,
         gender: 'male',
-        weight: 100
+        weight: 100,
+        height: 200
       });
 
       const appRole = yield UserRole.create({

@@ -1,4 +1,7 @@
 'use strict';
+
+const jDate = require('jdate').JDate;
+
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define('User', {
     userName: {
@@ -74,6 +77,14 @@ module.exports = function (sequelize, DataTypes) {
         isIn: [['male', 'female']]
       }
     },
+    height: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 50,
+        max: 280
+      }
+    },
     weight: DataTypes.FLOAT
   }, {
     classMethods: {
@@ -82,6 +93,12 @@ module.exports = function (sequelize, DataTypes) {
         User.hasMany(models.SavedSalad);
         User.hasMany(models.UserRole);
         User.hasMany(models.Order);
+      }
+    },
+
+    instanceMethods: {
+      age: function() {
+        return (jDate().getFullYear()) - this.birthDateYear;
       }
     }
   });

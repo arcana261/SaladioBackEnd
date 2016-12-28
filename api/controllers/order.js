@@ -113,7 +113,7 @@ module.exports = restified({
       transaction: t
     });
 
-    const callorie = makeSum('callorie');
+    const callorie = makeSum('energy');
     const weight = makeSum('weight');
     const price = makeSum('price');
 

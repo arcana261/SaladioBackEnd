@@ -52,7 +52,7 @@ class SqlUtils {
           else {
             result[prop] = function (queryInterface, Sequelize) {
               return queryInterface.sequelize.transaction(transaction => {
-                return value(t, queryInterface, Sequelize);
+                return value(transaction, queryInterface, Sequelize);
               });
             };
           }
