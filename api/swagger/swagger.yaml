@@ -601,6 +601,29 @@ parameters:
 paths:
   /swagger:
     x-swagger-pipe: swagger_raw
+  /App/CheckVersion:
+    x-swagger-router-controller: app
+    get:
+      description: checks if application version is good
+      operationId: checkAppVersion
+      tags:
+        - 'Role: Guest'
+        - App
+      parameters:
+        - name: version
+          in: query
+          required: true
+          description: app version
+          type: string
+      responses:
+        200:
+          description: shows whether app version is ok
+          schema:
+            type: object
+            properties:
+              isOk:
+                type: boolean
+                description: whether app version is correct
   /SaladComponentGroups:
     x-swagger-router-controller: saladcomponentgroup
     get:
@@ -819,6 +842,39 @@ paths:
                 type: number
                 description: fact sheet item
                 minimum: 0
+  /Users/Me/PromoteToFriends:
+    x-swagger-router-controller: user
+    put:
+      description: promote the application to friends
+      operationId: promoteToFriends
+      parameters:
+        - name: friend
+          in: body
+          required: true
+          description: friend to suggest to
+          schema:
+            type: object
+            properties:
+              phoneNumber:
+                type: array
+                description: mobile (cell) phone number of user
+                items:
+                  type: string
+                  #pattern: '^(\+?989\d{2}|09\d{2})\d{7}$'
+                  default: '09123334444'
+      security:
+        - basic: []
+      tags:
+        - Users
+        - 'Role: app'
+      responses:
+        200:
+          description: promotion is done
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
   /ClassicSaladCatagories:
     x-swagger-router-controller: classicsaladcatagories
     get:

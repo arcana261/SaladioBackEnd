@@ -1,7 +1,7 @@
 'use strict';
 
 const restified = require('../helpers/restified');
-const {User, UserAddress, UserRole} = require('../../models');
+const {User, UserAddress, UserRole, Recommendation} = require('../../models');
 const types = require('../helpers/types');
 
 module.exports = restified({
@@ -75,7 +75,7 @@ module.exports = restified({
     res.json(result);
   },
 
-  getCurrentUserNeeds: function* (t, req, res) {
+  getCurrentUserNeeds: function*(t, req, res) {
     const {userId} = req.swagger.auth;
 
     const user = yield User.findOne({
@@ -142,6 +142,30 @@ module.exports = restified({
     }
 
     res.json(result);
-  }
+  },
 
+  promoteToFriends: function*(t, req, res) {
+    const {
+        friend: {
+            value: {
+                phoneNumber
+            }
+        }
+    } = req.swagger.params;
+    const {userId} = req.swagger.auth;
+
+    const user = yield User.findOne({
+      where: {id: userId},
+      transaction: t
+    });
+
+    for (const phone of phoneNumber) {
+      const recommendation = yield Recommendation.create({
+        phoneNumber: phone
+      }, {transaction: t});
+      yield recommendation.setUser(user, {transaction: t});
+    }
+
+    res.json({id: 0});
+  }
 });

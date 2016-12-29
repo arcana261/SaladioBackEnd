@@ -93,6 +93,7 @@ module.exports = function (sequelize, DataTypes) {
         User.hasMany(models.SavedSalad);
         User.hasMany(models.UserRole);
         User.hasMany(models.Order);
+        User.hasMany(models.Recommendation);
       }
     },
 
